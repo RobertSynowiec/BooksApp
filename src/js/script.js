@@ -1,3 +1,4 @@
+//const { data } = require("autoprefixer");
 
 const select = {
     templateOf: {
@@ -47,7 +48,6 @@ render();
 /* End render books */
 
 /* Start add favorite Books*/
-
 function initAction() {
 
     let favoriteBooks = [];
@@ -57,7 +57,7 @@ function initAction() {
     for (let bookImage of allBooksImage ){
 
         /* add event listener to clickable image on event dbclick */
-        bookImage.addEventListener('dblclick', function(event) {
+        bookImage.addEventListener('click', function(event) {
 
         /* prevent default action for event */
         event.preventDefault();
@@ -67,12 +67,36 @@ function initAction() {
 
         /* get data-id */
         const dataId = bookImage.dataset.id;
+        console.log('dataId ', dataId);
 
-        /* add id to favoriteBooks */
-        favoriteBooks.push(dataId);
-        });
+
+        let elementToCheck = dataId;
+
+        /* check if there is dataId in the table, if so, remove it */
+
+        if (favoriteBooks.includes(elementToCheck)) {
+           let indexToRemove = favoriteBooks.indexOf(elementToCheck);
+           favoriteBooks.splice(indexToRemove, 1);
+
+           console.log("The item was found and deleted.");
+
+           /* remove id to favoriteBooks */
+           bookImage.classList.remove('favorite');
+
+        } else {
+            console.log("The element was not found in the array.");
+
+            /* add class favorite */
+            bookImage.classList.add('favorite');
+            /* add id to favoriteBooks */
+            favoriteBooks.push(dataId);
+        }
+        console.log('favoriteBooks ', favoriteBooks );
+    });
     }
-    console.log('favoriteBooks ', favoriteBooks );
+
+
+
 }
 initAction();
 
