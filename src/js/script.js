@@ -18,7 +18,7 @@ const templates = {
 
 
 const dataSourceBooks = dataSource.books
-console.log(dataSourceBooks);
+//console.log(dataSourceBooks);
 
 /* Start render books */
 
@@ -29,15 +29,14 @@ function render(){
 
         /* generate HTML based on temaplte */
         const generatedHTML = templates.listProduct(elem);
-        console.log(generatedHTML);
+       // console.log(generatedHTML);
 
         /* create element using utilies.createElementFromHTML*/
         const generatedDOM = utils.createDOMFromHTML(generatedHTML);
-        console.log(generatedDOM);
+       // console.log(generatedDOM);
 
         /* find list book container */
         const listConatainer = document.querySelector(select.containerOf.list);
-        console.log(listConatainer);
 
         /* add generatedDOM to listConatainer */
         listConatainer.appendChild(generatedDOM);
@@ -52,52 +51,42 @@ function initAction() {
 
     let favoriteBooks = [];
 
-    const allBooksImage = document.querySelectorAll(select.bookProduct.image);
-
-    for (let bookImage of allBooksImage ){
+    const listConatainer = document.querySelector(select.containerOf.list);
 
         /* add event listener to clickable image on event dbclick */
-        bookImage.addEventListener('dblclick', function(event) {
+        listConatainer.addEventListener('dblclick', function(event) {
 
         /* prevent default action for event */
         event.preventDefault();
 
-        /* add class favorite */
-        bookImage.classList.add('favorite')
+        if(event.target.offsetParent.classList.contains('book__image')) {
 
-        /* get data-id */
-        const dataId = bookImage.dataset.id;
-        console.log('dataId ', dataId);
+            const clickedItem = event.target.offsetParent;
 
+            /* get data-id */
+            const dataId = clickedItem.dataset.id;
 
-        let elementToCheck = dataId;
+            let elementToCheck = dataId;
 
-        /* check if there is dataId in the table, if so, remove it */
+            /* check if there is dataId in the table, if so, remove it */
+            if (favoriteBooks.includes(elementToCheck)) {
+            let indexToRemove = favoriteBooks.indexOf(elementToCheck);
+            favoriteBooks.splice(indexToRemove, 1);
 
-        if (favoriteBooks.includes(elementToCheck)) {
-           let indexToRemove = favoriteBooks.indexOf(elementToCheck);
-           favoriteBooks.splice(indexToRemove, 1);
+                /* remove id to favoriteBooks */
+                clickedItem.classList.remove('favorite');
 
-           console.log("The item was found and deleted.");
+                } else {
 
-           /* remove id to favoriteBooks */
-           bookImage.classList.remove('favorite');
-
-        } else {
-            console.log("The element was not found in the array.");
-
-            /* add class favorite */
-            bookImage.classList.add('favorite');
-            /* add id to favoriteBooks */
-            favoriteBooks.push(dataId);
-        }
-        console.log('favoriteBooks ', favoriteBooks );
-    });
+                    /* add class favorite */
+                    clickedItem.classList.add('favorite');
+                    /* add id to favoriteBooks */
+                    favoriteBooks.push(dataId);
+                }
+                console.log('favoriteBooks ', favoriteBooks );
+            }
+        });
     }
-
-
-
-}
 initAction();
 
 /* End add favorite Books*/
