@@ -6,7 +6,10 @@ const select = {
     },
     containerOf: {
         list: '.books-list',
-      },
+    },
+    bookProduct: {
+        image: '.book__image',
+    },
 }
 const templates = {
     listProduct: Handlebars.compile(document.querySelector(select.templateOf.listProduct).innerHTML),
@@ -16,7 +19,7 @@ const templates = {
 const dataSourceBooks = dataSource.books
 console.log(dataSourceBooks);
 
-
+/* Start render books */
 
 function render(){
 
@@ -31,12 +34,46 @@ function render(){
         const generatedDOM = utils.createDOMFromHTML(generatedHTML);
         console.log(generatedDOM);
 
-            /* find list book container */
-        const menuConatainer = document.querySelector(select.containerOf.list);
-        console.log(menuConatainer);
+        /* find list book container */
+        const listConatainer = document.querySelector(select.containerOf.list);
+        console.log(listConatainer);
 
-            /* add element to menu */
-            menuConatainer.appendChild(generatedDOM);
+        /* add generatedDOM to listConatainer */
+        listConatainer.appendChild(generatedDOM);
     }
 }
 render();
+
+/* End render books */
+
+/* Start add favorite Books*/
+
+function initAction() {
+
+    let favoriteBooks = [];
+
+    const allBooksImage = document.querySelectorAll(select.bookProduct.image);
+
+    for (let bookImage of allBooksImage ){
+
+        /* add event listener to clickable image on event dbclick */
+        bookImage.addEventListener('dblclick', function(event) {
+
+        /* prevent default action for event */
+        event.preventDefault();
+
+        /* add class favorite */
+        bookImage.classList.add('favorite')
+
+        /* get data-id */
+        const dataId = bookImage.dataset.id;
+
+        /* add id to favoriteBooks */
+        favoriteBooks.push(dataId);
+        });
+    }
+    console.log('favoriteBooks ', favoriteBooks );
+}
+initAction();
+
+/* End add favorite Books*/
