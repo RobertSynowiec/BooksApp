@@ -57,7 +57,7 @@ function initAction() {
     for (let bookImage of allBooksImage ){
 
         /* add event listener to clickable image on event dbclick */
-        bookImage.addEventListener('click', function(event) {
+        bookImage.addEventListener('dblclick', function(event) {
 
         /* prevent default action for event */
         event.preventDefault();
