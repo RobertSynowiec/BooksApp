@@ -1,46 +1,42 @@
 //const { data } = require("autoprefixer");
 
 const select = {
-    templateOf: {
-      listProduct: '#template-book',
-
-    },
-    containerOf: {
-        list: '.books-list',
-    },
-    bookProduct: {
-        image: '.book__image',
-    },
-}
+  templateOf: {
+    listProduct: '#template-book',
+  },
+  containerOf: {
+    list: '.books-list',
+  },
+  bookProduct: {
+    image: '.book__image',
+  },
+};
 const templates = {
-    listProduct: Handlebars.compile(document.querySelector(select.templateOf.listProduct).innerHTML),
-  };
+  listProduct: Handlebars.compile(document.querySelector(select.templateOf.listProduct).innerHTML),
+};
 
-
-const dataSourceBooks = dataSource.books
-//console.log(dataSourceBooks);
+const dataSourceBooks = dataSource.books;
 
 /* Start render books */
 
 function render(){
 
+  for (const elem of dataSourceBooks){
 
-    for (const elem of dataSourceBooks){
+    /* generate HTML based on temaplte */
+    const generatedHTML = templates.listProduct(elem);
+    // console.log(generatedHTML);
 
-        /* generate HTML based on temaplte */
-        const generatedHTML = templates.listProduct(elem);
-       // console.log(generatedHTML);
+    /* create element using utilies.createElementFromHTML*/
+    const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+    // console.log(generatedDOM);
 
-        /* create element using utilies.createElementFromHTML*/
-        const generatedDOM = utils.createDOMFromHTML(generatedHTML);
-       // console.log(generatedDOM);
+    /* find list book container */
+    const listConatainer = document.querySelector(select.containerOf.list);
 
-        /* find list book container */
-        const listConatainer = document.querySelector(select.containerOf.list);
-
-        /* add generatedDOM to listConatainer */
-        listConatainer.appendChild(generatedDOM);
-    }
+    /* add generatedDOM to listConatainer */
+    listConatainer.appendChild(generatedDOM);
+  }
 }
 render();
 
@@ -49,44 +45,44 @@ render();
 /* Start add favorite Books*/
 function initAction() {
 
-    let favoriteBooks = [];
+  let favoriteBooks = [];
 
-    const listConatainer = document.querySelector(select.containerOf.list);
+  const listConatainer = document.querySelector(select.containerOf.list);
 
-        /* add event listener to clickable image on event dbclick */
-        listConatainer.addEventListener('dblclick', function(event) {
+  /* add event listener to clickable image on event dbclick */
+  listConatainer.addEventListener('dblclick', function(event) {
 
-        /* prevent default action for event */
-        event.preventDefault();
+    /* prevent default action for event */
+    event.preventDefault();
 
-        if(event.target.offsetParent.classList.contains('book__image')) {
+    if(event.target.offsetParent.classList.contains('book__image')) {
 
-            const clickedItem = event.target.offsetParent;
+      const clickedItem = event.target.offsetParent;
 
-            /* get data-id */
-            const dataId = clickedItem.dataset.id;
+      /* get data-id */
+      const dataId = clickedItem.dataset.id;
 
-            let elementToCheck = dataId;
+      let elementToCheck = dataId;
 
-            /* check if there is dataId in the table, if so, remove it */
-            if (favoriteBooks.includes(elementToCheck)) {
-            let indexToRemove = favoriteBooks.indexOf(elementToCheck);
-            favoriteBooks.splice(indexToRemove, 1);
+      /* check if there is dataId in the table, if so, remove it */
+      if (favoriteBooks.includes(elementToCheck)) {
+        let indexToRemove = favoriteBooks.indexOf(elementToCheck);
+        favoriteBooks.splice(indexToRemove, 1);
 
-                /* remove id to favoriteBooks */
-                clickedItem.classList.remove('favorite');
+        /* remove id to favoriteBooks */
+        clickedItem.classList.remove('favorite');
 
-                } else {
+      } else {
 
-                    /* add class favorite */
-                    clickedItem.classList.add('favorite');
-                    /* add id to favoriteBooks */
-                    favoriteBooks.push(dataId);
-                }
-                console.log('favoriteBooks ', favoriteBooks );
-            }
-        });
+        /* add class favorite */
+        clickedItem.classList.add('favorite');
+        /* add id to favoriteBooks */
+        favoriteBooks.push(dataId);
+      }
+      console.log('favoriteBooks ', favoriteBooks );
     }
+  });
+}
 initAction();
 
 /* End add favorite Books*/
