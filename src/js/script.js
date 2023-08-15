@@ -1,88 +1,158 @@
 //const { data } = require("autoprefixer");
+{
+  'use strict';
 
-const select = {
-  templateOf: {
-    listProduct: '#template-book',
-  },
-  containerOf: {
-    list: '.books-list',
-  },
-  bookProduct: {
-    image: '.book__image',
-  },
-};
-const templates = {
-  listProduct: Handlebars.compile(document.querySelector(select.templateOf.listProduct).innerHTML),
-};
+  const select = {
+    templateOf: {
+      listProduct: '#template-book',
+      filtersBook: '.filters',
+    },
+    containerOf: {
+      list: '.books-list',
+    },
+  };
+  const classBookImage = {
+    singleBook: '.book__image',
+  };
+  const classFor = {
+    singleBook: 'book__image',
+  };
+  const search = {
+    attributes: {
+      bookId: 'data-id',
+    },
+  };
+  const classNames = {
+    favoriteBook: 'favorite',
+  };
+  const templates = {
+    listProduct: Handlebars.compile(document.querySelector(select.templateOf.listProduct).innerHTML),
+  };
 
-const dataSourceBooks = dataSource.books;
+  const favoriteBooks = [];
 
-/* Start render books */
+  const filters = [];
 
-function render(){
+  const bookList = document.querySelector(select.containerOf.list);
 
-  for (const elem of dataSourceBooks){
+  const render = function (){
 
-    /* generate HTML based on temaplte */
-    const generatedHTML = templates.listProduct(elem);
-    // console.log(generatedHTML);
+    for (let elem of dataSource.books){
 
-    /* create element using utilies.createElementFromHTML*/
-    const generatedDOM = utils.createDOMFromHTML(generatedHTML);
-    // console.log(generatedDOM);
+      elem.ratingBgc = determineRatingBgc(elem.rating);
+      elem.ratingWidth = elem.rating*10;
+      const generatedHTML = templates.listProduct(elem);
+      const generatedElementDOM = utils.createDOMFromHTML(generatedHTML);
+      bookList.appendChild(generatedElementDOM);
+    }
+  };
+  render();
 
-    /* find list book container */
-    const listConatainer = document.querySelector(select.containerOf.list);
+  const initAction = function() {
 
-    /* add generatedDOM to listConatainer */
-    listConatainer.appendChild(generatedDOM);
+    const bookList = document.querySelectorAll(classBookImage.singleBook);
+
+    for(let elem of bookList){
+
+      elem.addEventListener('dblclick', function(event) {
+
+        event.preventDefault();
+
+        const containerImages = event.target.offsetParent;
+
+        if (containerImages.classList.contains(classFor.singleBook)){
+
+          const id = containerImages.getAttribute(search.attributes.bookId);
+          containerImages.classList.toggle(classNames.favoriteBook);
+          const idInFavoriteTable = favoriteBooks.indexOf(id);
+
+          if(idInFavoriteTable == -1){
+
+            elem.classList.add('favorite');
+            favoriteBooks.push(id);
+
+          } else {
+
+            favoriteBooks.splice(idInFavoriteTable , 1);
+            elem.classList.remove('favorite');
+          }
+        }
+      });
+
+      const elemFilter = document.querySelector(select.templateOf.filtersBook);
+
+      elemFilter.addEventListener('click' , function(event){
+        const clickedElement = event.target;
+
+        if (clickedElement.tagName == 'INPUT' && clickedElement.type == 'checkbox' && clickedElement.name == 'filter'){
+
+          if (clickedElement.checked){
+
+            filters.push(clickedElement.value);
+          }
+          else {
+            const valueArray = filters.indexOf(clickedElement.value);
+            filters.splice(valueArray, 1);
+          }
+        }
+        filterBooks();
+      });
+    }
+  };
+  initAction();
+
+  const filterBooks = function(){
+
+    for (let book of dataSource.books){
+
+      let shouldBeHidden = false;
+
+      const bookSelector = document.querySelector('[data-id="' + book.id + '"]');
+
+      for(let filter of filters){
+
+        if(book.details[filter] == true){
+
+          shouldBeHidden = true;
+          break;
+        }
+      }
+
+      if (shouldBeHidden == true){
+
+        if (!bookSelector.classList.contains('hidden')){
+          bookSelector.classList.add('hidden');
+        }
+      }
+
+      else{
+        if (bookSelector.classList.contains('hidden')){
+          bookSelector.classList.remove('hidden');
+        }
+      }
+    }
+  };
+  function determineRatingBgc(rating){
+
+    let styleColorRating;
+
+    if(rating < 6){
+
+      styleColorRating = 'linear-gradient(to bottom,  #fefcea 0%, #f1da36 100%)';
+    }
+    else if(rating > 6 && rating <= 8){
+
+      styleColorRating = 'linear-gradient(to bottom, #b4df5b 0%,#b4df5b 100%)';
+    }
+
+    else if(rating > 8 && rating <= 9){
+
+      styleColorRating = 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)';
+    }
+    else if(rating > 9){
+
+      styleColorRating = 'linear-gradient(to bottom, #ff0084 0%,#ff0084 100%)';
+    }
+    return styleColorRating;
   }
 }
-render();
-
-/* End render books */
-
-/* Start add favorite Books*/
-function initAction() {
-
-  let favoriteBooks = [];
-
-  const listConatainer = document.querySelector(select.containerOf.list);
-
-  /* add event listener to clickable image on event dbclick */
-  listConatainer.addEventListener('dblclick', function(event) {
-
-    /* prevent default action for event */
-    event.preventDefault();
-
-    if(event.target.offsetParent.classList.contains('book__image')) {
-
-      const clickedItem = event.target.offsetParent;
-
-      /* get data-id */
-      const dataId = clickedItem.dataset.id;
-
-      let elementToCheck = dataId;
-
-      /* check if there is dataId in the table, if so, remove it */
-      if (favoriteBooks.includes(elementToCheck)) {
-        let indexToRemove = favoriteBooks.indexOf(elementToCheck);
-        favoriteBooks.splice(indexToRemove, 1);
-
-        /* remove id to favoriteBooks */
-        clickedItem.classList.remove('favorite');
-
-      } else {
-
-        /* add class favorite */
-        clickedItem.classList.add('favorite');
-        /* add id to favoriteBooks */
-        favoriteBooks.push(dataId);
-      }
-      console.log('favoriteBooks ', favoriteBooks );
-    }
-  });
-}
-initAction();
-
-/* End add favorite Books*/
